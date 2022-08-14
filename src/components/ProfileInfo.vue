@@ -1,178 +1,134 @@
 <template>
-    <div class="sidebar-group mobile-open">
+    <div class="sidebar-group">
         <div id="contact-information" class="sidebar active">
-            <header>
+            <header style="padding-right: 10px;">
                 <span>资料信息</span>
-                <el-button type="danger" @click="closePersonInfo">关闭</el-button>
+                <span style="margin-left: 30px;">
+                    <el-button type="primary" v-if="user.id === groupInfo.userId && props.profileType === 2" @click="showInviteUser = true">邀请</el-button>
+                </span>
+                <span style="">
+                    <el-button type="warning" v-if="user.id === groupInfo.userId && props.profileType === 2" @click="showEditGroupInfo = true">修改</el-button>
+                </span>
+                <span>
+                    <el-button type="danger" @click="closeProfileInfo">关闭</el-button>
+                </span>
             </header>
             <div class="sidebar-body">
                 <div class="pl-4 pr-4">
                     <div class="text-center">
-                        <figure class="avatar avatar-xl mb-4">
-                            <img src="/static/dist/media/img/women_avatar5.jpg" class="rounded-circle" alt="image">
+                        <figure class="avatar avatar-xl mb-4" v-if="props.profileType === 1">
+                            <img :src="computeFileUrl(receiverUser.headPic)" class="rounded-circle" alt="image">
                         </figure>
-                        <h5 class="mb-1">Mirabelle Tow</h5>
-                        <small class="text-muted font-italic">Last seen: Today</small>
-
+                        <figure class="avatar avatar-xl mb-4" v-if="props.profileType === 2">
+                            <img v-if="groupInfo.groupPic !== ''" :src="computeFileUrl(groupInfo.groupPic)" class="rounded-circle" alt="image">
+                            <span v-else class="avatar-title bg-warning bg-success rounded-circle">
+                                <i class="fa fa-users"></i>
+                            </span>
+                        </figure>
+                        <h5 class="mb-1" v-if="props.profileType === 1">{{receiverUser.username}}</h5>
+                        <h5 class="mb-1" v-if="props.profileType === 2">{{groupInfo.name}}</h5>
                         <ul class="nav nav-tabs justify-content-center mt-5" id="myTab" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
-                                   aria-controls="home" aria-selected="true">About</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
-                                   aria-controls="profile" aria-selected="false">Media</a>
+                                <a class="nav-link active" v-if="props.profileType === 1" href="javascript:void(0);"
+                                   aria-controls="home" aria-selected="true">个人简介</a>
+                                <a class="nav-link active" v-if="props.profileType === 2" href="javascript:void(0);"
+                                   aria-controls="home" aria-selected="true">群聊简介</a>
                             </li>
                         </ul>
                     </div>
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                            <p class="text-muted">Lorem ipsum is a pseudo-Latin text used in web design, typography,
-                                layout, and printing in place of English to emphasise design elements over content.
-                                It's also called placeholder (or filler) text. It's a convenient tool for
-                                mock-ups.</p>
-                            <div class="mt-4 mb-4">
-                                <h6>Phone</h6>
-                                <p class="text-muted">(555) 555 55 55</p>
+                            <p class="text-muted" v-if="props.profileType === 1">{{receiverUser.info}}</p>
+                            <p class="text-muted" v-if="props.profileType === 2">{{groupInfo.info}}</p>
+                            <div class="mt-4 mb-4" v-if="props.profileType === 1">
+                                <h6>手机号码</h6>
+                                <p class="text-muted">{{receiverUser.phone}}</p>
                             </div>
-                            <div class="mt-4 mb-4">
-                                <h6>City</h6>
-                                <p class="text-muted">Germany / Berlin</p>
+                            <div class="mt-4 mb-4" v-if="props.profileType === 2">
+                                <h6>创建者</h6>
+                                <p class="text-muted">{{groupInfo.username}}</p>
                             </div>
-                            <div class="mt-4 mb-4">
-                                <h6>Website</h6>
-                                <p>
-                                    <a href="#">www.franshanscombe.com</a>
+                            <div class="mt-4 mb-4" v-if="props.profileType === 1">
+                                <h6>居住城市</h6>
+                                <p class="text-muted">{{receiverUser.city}}</p>
+                            </div>
+                            <div class="mt-4 mb-4" v-if="props.profileType === 2">
+                                <h6>创建时间</h6>
+                                <p class="text-muted">{{groupInfo.createTime}}</p>
+                            </div>
+                            <div class="mt-4 mb-4" v-if="props.profileType === 2">
+                                <h6>群聊成员</h6>
+                                <p class="text-muted">
+                                    <template v-for="(item,index) in groupInfo.groupItemList" :key="index">
+                                        <span :title="item.userDTO.username">
+                                            <el-avatar :src="computeFileUrl(item.userDTO.headPic)"></el-avatar>
+                                        </span>
+                                    </template>
                                 </p>
-                            </div>
-                            <div class="mt-4 mb-4">
-                                <h6 class="mb-3">Social media accounts</h6>
-                                <ul class="list-inline social-links">
-                                    <li class="list-inline-item">
-                                        <a href="#" class="btn btn-sm btn-floating btn-facebook"
-                                           data-toggle="tooltip" title="Facebook">
-                                            <i class="fa fa-facebook"></i>
-                                        </a>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <a href="#" class="btn btn-sm btn-floating btn-twitter"
-                                           data-toggle="tooltip" title="Twitter">
-                                            <i class="fa fa-twitter"></i>
-                                        </a>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <a href="#" class="btn btn-sm btn-floating btn-dribbble"
-                                           data-toggle="tooltip" title="Dribbble">
-                                            <i class="fa fa-dribbble"></i>
-                                        </a>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <a href="#" class="btn btn-sm btn-floating btn-whatsapp"
-                                           data-toggle="tooltip" title="Whatsapp">
-                                            <i class="fa fa-whatsapp"></i>
-                                        </a>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <a href="#" class="btn btn-sm btn-floating btn-linkedin"
-                                           data-toggle="tooltip" title="Linkedin">
-                                            <i class="fa fa-linkedin"></i>
-                                        </a>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <a href="#" class="btn btn-sm btn-floating btn-google" data-toggle="tooltip"
-                                           title="Google">
-                                            <i class="fa fa-google"></i>
-                                        </a>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <a href="#" class="btn btn-sm btn-floating btn-behance"
-                                           data-toggle="tooltip" title="Behance">
-                                            <i class="fa fa-behance"></i>
-                                        </a>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <a href="#" class="btn btn-sm btn-floating btn-instagram"
-                                           data-toggle="tooltip" title="Instagram">
-                                            <i class="fa fa-instagram"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="mt-4 mb-4">
-                                <h6 class="mb-3">Settings</h6>
-                                <div class="form-group">
-                                    <div class="form-item custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="customSwitch11">
-                                        <label class="custom-control-label" for="customSwitch11">Block</label>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="form-item custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" checked=""
-                                               id="customSwitch12">
-                                        <label class="custom-control-label" for="customSwitch12">Mute</label>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="form-item custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="customSwitch13">
-                                        <label class="custom-control-label" for="customSwitch13">Get
-                                            notification</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                            <h6 class="mb-3 d-flex align-items-center justify-content-between">
-                                <span>Recent Files</span>
-                                <a href="#" class="btn btn-link small">
-                                    <i data-feather="upload" class="mr-2"></i> Upload
-                                </a>
-                            </h6>
-                            <div>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item pl-0 pr-0 d-flex align-items-center">
-                                        <a href="#">
-                                            <i class="fa fa-file-pdf-o text-danger mr-2"></i> report4221.pdf
-                                        </a>
-                                    </li>
-                                    <li class="list-group-item pl-0 pr-0 d-flex align-items-center">
-                                        <a href="#">
-                                            <i class="fa fa-image text-muted mr-2"></i> avatar_image.png
-                                        </a>
-                                    </li>
-                                    <li class="list-group-item pl-0 pr-0 d-flex align-items-center">
-                                        <a href="#">
-                                            <i class="fa fa-file-excel-o text-success mr-2"></i>
-                                            excel_report_file2020.xlsx
-                                        </a>
-                                    </li>
-                                    <li class="list-group-item pl-0 pr-0 d-flex align-items-center">
-                                        <a href="#">
-                                            <i class="fa fa-file-text-o text-warning mr-2"></i> articles342133.txt
-                                        </a>
-                                    </li>
-                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <el-dialog v-model="showInviteUser" title="邀请用户加入群聊" :close-on-click-modal="false">
+            <el-form :model="inviteUserData">
+                <el-form-item label="用户编号" label-width="100px">
+                    <el-input v-model="inviteUserData.id" placeholder="请输入用户编号" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+              <span class="dialog-footer">
+                <el-button @click="showInviteUser = false">取消</el-button>
+                <el-button type="primary" @click="inviteGroupUser">确定</el-button>
+              </span>
+            </template>
+        </el-dialog>
+
+        <el-dialog v-model="showEditGroupInfo" title="修改群聊信息" :close-on-click-modal="false">
+            <el-form :model="saveGroupInfo">
+                <el-form-item label="群聊名称" label-width="100px">
+                    <el-input v-model="saveGroupInfo.name" placeholder="请输入群聊名称" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="群聊图片" label-width="100px">
+                    <input type="file" ref="photo" id="photo" style="display:none;" @change="uploadPhoto">
+                    <figure class="avatar avatar-xl mb-4" style="width: 5.6rem; height: 5.6rem">
+                        <img v-if="saveGroupInfo.groupPic !== ''" :src="computeFileUrl(saveGroupInfo.groupPic)" id="photo-view" style="width:100px; height:100px;" />
+                        <span v-else class="avatar-title bg-warning bg-success rounded-circle">
+                            <i class="fa fa-users"></i>
+                        </span>
+                    </figure>
+                    <el-button type="danger" @click="openUploadPhoto" style="vertical-align:middle;float:none;margin-left:20px;">上传图片</el-button>
+                </el-form-item>
+                <el-form-item label="群聊简介" label-width="100px">
+                    <el-input v-model="saveGroupInfo.info" type="textarea" :row="5" placeholder="请输入群聊简介" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+              <span class="dialog-footer">
+                <el-button @click="showEditGroupInfo = false">取消</el-button>
+                <el-button type="primary" @click="editGroupInfo">确定</el-button>
+              </span>
+            </template>
+        </el-dialog>
     </div>
 </template>
 
 <script lang="ts">
-    import {defineComponent, onMounted, reactive, ref} from "vue";
+    import {defineComponent, onMounted, reactive, ref, watch} from "vue";
     import axios from "axios";
     import Tool from "@/utils/Tool";
     import Message from "@/utils/Message";
     import EIcon from '../components/EIcon.vue';
     import {useRouter} from "vue-router";
     export default defineComponent({
-        name: "PersonInfo",
+        name: "ProfileInfo",
         props: {
-            EIcon
+            EIcon,
+            profileType: Number,
+            receiver: String,
+            groupId: String,
+            chatId: String
         },
         computed: {
             computeFileUrl() {
@@ -182,14 +138,178 @@
             }
         },
         setup(props, context) {
+            const router = useRouter();
+            let user = reactive({id: "", username: ""});
+            let showInviteUser = ref(false);
+            let inviteUserData = reactive({id: ""});
 
             // 关闭个人信息页面
-            function closePersonInfo() {
-                context.emit("closePersonInfo")
+            function closeProfileInfo() {
+                context.emit("closeProfileInfo")
+            }
+
+            watch(props,(newProps, oldProps) => {
+                if(props.profileType === 1) {
+                    // 用户信息
+                    getReceiverUserInfo();
+                } else if(props.profileType === 2) {
+                    // 群聊信息
+                    getReceiverGroupInfo();
+                }
+            });
+
+            let showEditGroupInfo = ref(false);
+
+            onMounted(() => {
+                // 动态加载js文件
+                Tool.loadJs();
+                // 验证是否登录
+                const token = Tool.getLoginUser();
+                axios.post(process.env.VUE_APP_SERVER + "/web/user/check_login", {token: token}).then((response)=>{
+                    let resp = response.data;
+                    if(resp.code === 0) {
+                        const data = resp.data;
+                        user.id = data.id;
+                        user.username = data.username;
+                        if(props.profileType === 1) {
+                            // 用户信息
+                            getReceiverUserInfo();
+                        } else if(props.profileType === 2) {
+                            // 群聊信息
+                            getReceiverGroupInfo();
+                        }
+
+                    }else {
+                        router.push({
+                            path:"/"
+                        });
+                    }
+                });
+            });
+
+            let receiverUser = reactive({id: "", username: "", phone: "", city: "", headPic: ""});
+            // 获取用户信息资料
+            function getReceiverUserInfo() {
+                axios.post(process.env.VUE_APP_SERVER + "/web/user/get", {id: props.receiver}).then((response)=>{
+                    let resp = response.data;
+                    if(resp.code === 0) {
+                        const data = resp.data;
+                        receiverUser.id = data.id;
+                        receiverUser.username = data.username;
+                        receiverUser.phone = data.phone;
+                        receiverUser.city = data.city;
+                        receiverUser.headPic = data.headPic;
+                    }
+                });
+            }
+
+            let groupInfo = reactive({id: "", name: "", chatId: "", userId: "", info: "", groupPic: "", username: "", createTime: "", groupItemList: []});
+            // 获取群聊信息资料
+            function getReceiverGroupInfo() {
+                axios.post(process.env.VUE_APP_SERVER + "/web/group/get", {id: props.groupId}).then((response)=>{
+                    let resp = response.data;
+                    if(resp.code === 0) {
+                        const data = resp.data;
+                        groupInfo.id = data.id;
+                        groupInfo.name = data.name;
+                        groupInfo.info = data.info;
+                        groupInfo.groupPic = data.groupPic;
+                        groupInfo.userId = data.userId;
+                        groupInfo.chatId = data.chatId;
+                        groupInfo.username = data.userDTO.username;
+                        groupInfo.createTime = data.createTime;
+                        groupInfo.groupItemList = data.groupItemDTOList;
+                        // 群聊更新信息赋值
+                        saveGroupInfo.id = data.id;
+                        saveGroupInfo.name = data.name;
+                        saveGroupInfo.info = data.info;
+                        saveGroupInfo.groupPic = data.groupPic;
+                    }
+                });
+            }
+
+            // 邀请用户加入群聊
+            function inviteGroupUser() {
+                axios.post(process.env.VUE_APP_SERVER + "/web/group/invite", {id: groupInfo.id, userId: inviteUserData.id}).then((response)=>{
+                    let resp = response.data;
+                    if(resp.code === 0) {
+                        Message.alertMsg("邀请成功！", "success");
+                        getReceiverGroupInfo();
+                        if(props.chatId === groupInfo.chatId) {
+                            context.emit("getChatGroup", resp.data, props.chatId);
+                        }
+                        showInviteUser.value = false;
+                    } else {
+                        Message.alertMsg(resp.msg, "error");
+                    }
+                });
+            }
+
+            let saveGroupInfo = reactive({id: "", name: "", groupPic: "", info: "", userId: ""});
+            // 修改群聊信息
+            function editGroupInfo() {
+                saveGroupInfo.userId = user.id;
+                axios.post(process.env.VUE_APP_SERVER + "/web/group/save", saveGroupInfo).then((response)=>{
+                    let resp = response.data;
+                    if(resp.code === 0) {
+                        Message.alertMsg("群聊更新成功！", "success");
+                        getReceiverGroupInfo();
+                        const data = resp.data;
+                        if(data.chatId === props.chatId) {
+                            context.emit('getChatGroup', data, props.chatId);
+                        }
+                        showEditGroupInfo.value = false;
+                    } else {
+                        Message.alertMsg(resp.msg, "error");
+                    }
+                });
+            }
+
+            // 打开图片上传窗口
+            function openUploadPhoto() {
+                (document as any).getElementById("photo").click();
+            }
+
+            // 上传图片
+            const photo = ref(null);
+            function uploadPhoto() {
+                const photoList = (photo as any).value.files;
+                if(photoList === null || photoList.length !== 1) {
+                    Message.alertMsg("请选择一个图片！", "error");
+                    return;
+                }
+                const uploadPhoto = photoList[0];
+                const config = {
+                    headers:{'Content-Type':'multipart/form-data'}
+                };
+                const formData = new FormData();
+                formData.append('photo', uploadPhoto);
+                axios.post(process.env.VUE_APP_SERVER + "/photo/upload", formData, config).then((response)=>{
+                    let resp = response.data;
+                    if(resp.code === 0) {
+                        Message.alertMsg(resp.msg, "success");
+                        saveGroupInfo.groupPic = resp.data;
+                    } else {
+                        Message.alertMsg(resp.msg, "error");
+                    }
+                });
             }
 
             return {
-                closePersonInfo
+                closeProfileInfo,
+                props,
+                receiverUser,
+                groupInfo,
+                user,
+                inviteGroupUser,
+                showInviteUser,
+                inviteUserData,
+                showEditGroupInfo,
+                editGroupInfo,
+                saveGroupInfo,
+                openUploadPhoto,
+                uploadPhoto,
+                photo
             }
         }
     });

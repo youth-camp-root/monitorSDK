@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monitor-FE</title>
+    <script>
+      window.onload = function () {
+        new PerformanceObserver((entryList) => {
+          console.log(entryList.getEntries());
+          console.log(
+            "FP 白屏时间",
+            entryList.getEntriesByName("first-paint")[0].startTime
+          );
+          console.log(
+            "FCP 灰屏时间",
+            entryList.getEntriesByName("first-contentful-paint")[0].startTime
+          );
+        }).observe({ type: "paint", buffered: true });
+
+        new PerformanceObserver((entryList) => {
+          const {
+            domContentLoadedEventEnd,
+            fetchStart,
+            domainLookupEnd,
+            domainLookupStart,
+          } = entryList.getEntries()[0];
+          console.log(entryList.getEntries()[0]);
+          console.log("fetchSatrt", fetchStart);
+          console.log("domContentLoadedEventEnd", domContentLoadedEventEnd);
+          console.log(
+            "DomReady HTML加载完成时间",
+            domContentLoadedEventEnd - fetchStart
+          );
+          console.log("domainLookupStart DNS域名解析开始", domainLookupStart);
+          console.log("domainLookupEnd DNS域名解析结束", domainLookupEnd);
+          console.log("DNS查询时间", domainLookupEnd - domainLookupStart);
+        }).observe({ entryTypes: ["navigation"] });
+      };
+    </script>
+  </head>
+  <body>
+    <h2>Test</h2>
+  </body>
+</html>
