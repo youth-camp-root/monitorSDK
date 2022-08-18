@@ -3,6 +3,7 @@ import { injectResource } from "./lib/resource"
 import {injectJsError} from "./lib/jsError"
 import {injectPromiseError} from "./lib/promiseError"
 import {injectBlankScreen} from "./lib/blankError"
+import {countStayTime} from "./lib/stayTime"
 // 网络请求监控
 injectXHR();
 // 资源监控
@@ -13,3 +14,5 @@ injectJsError();
 injectPromiseError();
 // FP,FCP,DOMREADY,DNS监控
 injectBlankScreen();
+// stay time
+countStayTime();
