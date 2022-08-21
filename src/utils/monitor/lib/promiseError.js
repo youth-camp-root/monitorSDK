@@ -32,7 +32,7 @@ export function injectPromiseError() {
                 // type: "error", //jsError
                 category: 'Promise',
                 originURL: window.location.href,
-                timestamp: Date.now(),
+                // timestamp: Date.now(),
                 errorType: "promiseError", //unhandledrejection
                 errorMsg: message, //标签名
                 filename: file,

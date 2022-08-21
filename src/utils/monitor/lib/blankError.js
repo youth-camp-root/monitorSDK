@@ -32,7 +32,7 @@ export function injectBlankScreen() {
             tracker.send({
                 categroy: 'BlankScreen',
                 originURL: window.location.href,
-                timestamp: Date.now(),
+                // timestamp: Date.now(),
                 errorType: 'blankscreenError',
                 emptyPoints: "" + emptyPoints,
                 screen: window.screen.width + "x" + window.screen.height,
