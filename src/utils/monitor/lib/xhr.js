@@ -54,7 +54,8 @@ export function injectXHR() {
                     dnsDuration,
                     params: body || "", //请求参数
                     responseData: this.response ? JSON.stringify(this.response) : "",// 返回信息
-                    is_error: status > 300
+                    is_error: status > 300,
+                    originURL: window.location.href,
                 }, 'request');
             };
             this.addEventListener("load", handler("load"), false);
