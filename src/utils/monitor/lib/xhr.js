@@ -1,6 +1,24 @@
+import tracker from "../utils/tracker";
+
 export function injectXHR() {
+    let dnsDuration;
     let XMLHttpRequest = window.XMLHttpRequest;
     let oldOpen = XMLHttpRequest.prototype.open;
+    // dns
+    window.onload = function () {
+        let DNS;
+        new PerformanceObserver((entryList) => {
+            const {
+                domainLookupEnd,
+                domainLookupStart,
+            } = entryList.getEntries()[0];
+            // domainLookupStart DNS域名解析开始
+            // domainLookupEnd DNS域名解析结束
+            dnsDuration = domainLookupEnd - domainLookupStart;
+            // 发送
+            tracker.send({  DNS });
+        }).observe({ entryTypes: ["navigation"] });
+    };
     XMLHttpRequest.prototype.open = function (
         method,
         url,
@@ -29,7 +47,7 @@ export function injectXHR() {
                 let status = this.status;
                 let statusText = this.statusText;
                 // 上传日志
-                console.log('tarck-----------', {
+                tracker.send({
                     //未捕获的promise错误
                     // type: "xhr", //xhr
                     eventType: type, //请求类型 load error abort
@@ -39,7 +57,7 @@ export function injectXHR() {
                     responseData: this.response ? JSON.stringify(this.response) : "",// 返回信息
                     params: body || "", //请求参数
                     timestamp: Date.now(),
-                    is_error: status <= 300? false : true
+                    is_error: status <= 300 ? false : true
                 });
             };
             this.addEventListener("load", handler("load"), false);
@@ -47,21 +65,6 @@ export function injectXHR() {
             this.addEventListener("abort", handler("abort"), false);//放弃
         }
         oldSend.apply(this, arguments);
-    };
-
-    window.onload = function () {
-        let DNS;
-        new PerformanceObserver((entryList) => {
-            const {
-                domainLookupEnd,
-                domainLookupStart,
-            } = entryList.getEntries()[0];
-            // domainLookupStart DNS域名解析开始
-            // domainLookupEnd DNS域名解析结束
-            dnsDuration = domainLookupEnd - domainLookupStart;
-            // 发送
-            tracker.send({ DomReady,DNS });
-        }).observe({ entryTypes: ["navigation"] });
     };
 }
 
