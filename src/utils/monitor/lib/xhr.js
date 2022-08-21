@@ -1,24 +1,20 @@
 import tracker from "../utils/tracker";
 
 export function injectXHR() {
-    let dnsDuration;
+    let dnsDuration = 0;
     let XMLHttpRequest = window.XMLHttpRequest;
     let oldOpen = XMLHttpRequest.prototype.open;
     // dns
-    window.onload = function () {
-        let DNS;
-        new PerformanceObserver((entryList) => {
-            const {
-                domainLookupEnd,
-                domainLookupStart,
-            } = entryList.getEntries()[0];
-            // domainLookupStart DNS域名解析开始
-            // domainLookupEnd DNS域名解析结束
-            dnsDuration = domainLookupEnd - domainLookupStart;
-            // 发送
-            tracker.send({  DNS });
-        }).observe({ entryTypes: ["navigation"] });
-    };
+    new PerformanceObserver((entryList) => {
+        const {
+            domainLookupEnd,
+            domainLookupStart,
+        } = entryList.getEntries()[0];
+        // domainLookupStart DNS域名解析开始
+        // domainLookupEnd DNS域名解析结束
+        dnsDuration = domainLookupEnd - domainLookupStart;
+    }).observe({ entryTypes: ["navigation"] });
+
     XMLHttpRequest.prototype.open = function (
         method,
         url,
@@ -50,15 +46,16 @@ export function injectXHR() {
                 tracker.send({
                     //未捕获的promise错误
                     // type: "xhr", //xhr
-                    eventType: type, //请求类型 load error abort
                     targetURL: this.logData.url, //接口的url地址
                     statusCode: status + "-" + statusText,// 状态码
-                    httpDuration: "" + Date.now() - start, // 耗时
-                    responseData: this.response ? JSON.stringify(this.response) : "",// 返回信息
-                    params: body || "", //请求参数
                     timestamp: Date.now(),
-                    is_error: status <= 300 ? false : true
-                });
+                    eventType: type, //请求类型 load error abort
+                    httpDuration: "" + Date.now() - start, // 耗时
+                    dnsDuration,
+                    params: body || "", //请求参数
+                    responseData: this.response ? JSON.stringify(this.response) : "",// 返回信息
+                    is_error: status > 300
+                }, 'request');
             };
             this.addEventListener("load", handler("load"), false);
             this.addEventListener("error", handler("error"), false);//失败

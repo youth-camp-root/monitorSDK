@@ -18,5 +18,5 @@ export function injectResource() {
     });
 
     // 发送
-    tracker.send(result);
+    tracker.send(result, 'resourceError');
 }

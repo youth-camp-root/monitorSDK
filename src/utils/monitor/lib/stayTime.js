@@ -21,6 +21,35 @@ export function countStayTime() {
       }
     };
   }
+
+  let FP, FCP, DOMReady, dnsDuration;
+  window.onload = function () {
+    new PerformanceObserver((entryList) => {
+        // console.log(entryList.getEntries());
+        FP = entryList.getEntriesByName("first-paint")[0].startTime;
+        FCP = entryList.getEntriesByName("first-contentful-paint")[0].startTime;
+        // tracker.send({ FP, FCP });
+    }).observe({ type: "paint", buffered: true });
+
+    new PerformanceObserver((entryList) => {
+        const {
+            domContentLoadedEventEnd,
+            fetchStart,
+            domainLookupEnd,
+            domainLookupStart,
+        } = entryList.getEntries()[0];
+        // console.log(entryList.getEntries()[0]);
+        // console.log("fetchSatrt", fetchStart);
+        // console.log("domContentLoadedEventEnd", domContentLoadedEventEnd);
+        DOMReady = domContentLoadedEventEnd - fetchStart
+        // domainLookupStart DNS域名解析开始
+        // domainLookupEnd DNS域名解析结束
+        dnsDuration = domainLookupEnd - domainLookupStart;
+        // 发送
+        // tracker.send({ DOMReady,dnsDuration });
+    }).observe({ entryTypes: ["navigation"] });
+  };
+
   let timeStr
   // 单页面 -- Hash模式
   window.addEventListener('hashchange', () => {
@@ -29,12 +58,15 @@ export function countStayTime() {
     // console.log('待了时长：'+ t)
     if (t && t >= 1) {
       tracker.send({
-          userid:this.userid,
-          pageUrl:window.location.href,
-          stayDuration:t,
+          userid: userid,
+          pageUrl: window.location.href,
           // type:"hashchange",
-          timestamp:Date.now(),
-      })
+          timestamp: Date.now(),
+          FP: FP,
+          FCP: FCP,
+          DOMReady: DOMReady,
+          stayDuration: t,
+      }, 'pageload')
     }
 
   })
@@ -60,12 +92,15 @@ window.addEventListener('popstate',()=>{
 //   console.log('待了时长popstate：'+ t)
  if(t && t>=1){
   tracker.send({
-    userid:this.userid,
-    pageUrl:window.location.href,
-    stayDuration:t,
+    userid: userid,
+    pageUrl: window.location.href,
+    stayDuration: t,
     // type:"popstate",
-    timestamp:Date.now(),
-})}
+    timestamp: Date.now(),
+    FP: FP,
+    FCP: FCP,
+    DOMReady: DOMReady,
+}, 'pageload')}
 })
 
 window.addEventListener('pushstate',()=>{
@@ -73,12 +108,15 @@ window.addEventListener('pushstate',()=>{
   timeStr = new Date().getTime()
   if(t && t>=1){
   tracker.send({
-    userid:this.userid,
-    pageUrl:window.location.href,
-    stayDuration:t,
+    userid: userid,
+    pageUrl: window.location.href,
+    stayDuration: t,
     // type:"pushstate",
-    timestamp:Date.now(),
-})}
+    timestamp: Date.now(),
+    FP: FP,
+    FCP: FCP,
+    DOMReady: DOMReady,
+}, 'pageload')}
 //   console.log('待了时长pushstate：'+ t)
 })
 
@@ -87,12 +125,15 @@ window.addEventListener('replacestate',()=>{
   timeStr = new Date().getTime()
    if(t && t>=1){
   tracker.send({
-    userid:this.userid,
-    pageUrl:window.location.href,
-    stayDuration:t,
+    userid: userid,
+    pageUrl: window.location.href,
+    stayDuration: t,
     // type:"replacestate",
-    timestamp:Date.now(),
-})}
+    timestamp: Date.now(),
+    FP: FP,
+    FCP: FCP,
+    DOMReady: DOMReady,
+}, 'pageload')}
 //   console.log('待了时长replacestate：'+ t)
 })
 
@@ -109,12 +150,15 @@ window.onpagehide = ()=>{
   // let data = record && JSON.parse(record) || []
   if(stopTime && stopTime>=1){
     tracker.send({
-      userid:this.userid,
-      pageUrl:window.location.href,
-      stayDuration:stopTime,
+      userid: userid,
+      pageUrl: window.location.href,
+      stayDuration: stopTime,
       // type:"replacestate",
-      timestamp:Date.now(),
-  })}
+      timestamp: Date.now(),
+      FP: FP,
+      FCP: FCP,
+      DOMReady: DOMReady,
+  }, 'pageload')}
   // localStorage.setItem('data',
   // JSON.stringify([...data,{user:new Date().getTime(),path:window.location.href,stopTime}]))
 }
