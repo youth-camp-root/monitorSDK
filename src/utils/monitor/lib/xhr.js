@@ -31,13 +31,15 @@ export function injectXHR() {
                 // 上传日志
                 console.log('tarck-----------', {
                     //未捕获的promise错误
-                    type: "xhr", //xhr
+                    // type: "xhr", //xhr
                     eventType: type, //请求类型 load error abort
-                    pathname: this.logData.url, //接口的url地址
-                    status: status + "-" + statusText,// 状态码
-                    duration: "" + Date.now() - start, // 耗时
-                    response: this.response ? JSON.stringify(this.response) : "",// 返回信息
+                    targetURL: this.logData.url, //接口的url地址
+                    statusCode: status + "-" + statusText,// 状态码
+                    httpDuration: "" + Date.now() - start, // 耗时
+                    responseData: this.response ? JSON.stringify(this.response) : "",// 返回信息
                     params: body || "", //请求参数
+                    timestamp: Date.now(),
+                    is_error: status <= 300? false : true
                 });
             };
             this.addEventListener("load", handler("load"), false);
@@ -45,6 +47,21 @@ export function injectXHR() {
             this.addEventListener("abort", handler("abort"), false);//放弃
         }
         oldSend.apply(this, arguments);
+    };
+
+    window.onload = function () {
+        let DNS;
+        new PerformanceObserver((entryList) => {
+            const {
+                domainLookupEnd,
+                domainLookupStart,
+            } = entryList.getEntries()[0];
+            // domainLookupStart DNS域名解析开始
+            // domainLookupEnd DNS域名解析结束
+            dnsDuration = domainLookupEnd - domainLookupStart;
+            // 发送
+            tracker.send({ DomReady,DNS });
+        }).observe({ entryTypes: ["navigation"] });
     };
 }
 

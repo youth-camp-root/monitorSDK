@@ -6,7 +6,7 @@ export function injectBlankScreen() {
     // DomReady HTML加载完成时间
     // DNS DNS查询时间
     window.onload = function () {
-        let FP, FCP, DomReady, DNS;
+        let FP, FCP, DOMReady, dnsDuration;
         new PerformanceObserver((entryList) => {
             // console.log(entryList.getEntries());
             FP = entryList.getEntriesByName("first-paint")[0].startTime;
@@ -24,12 +24,12 @@ export function injectBlankScreen() {
             // console.log(entryList.getEntries()[0]);
             // console.log("fetchSatrt", fetchStart);
             // console.log("domContentLoadedEventEnd", domContentLoadedEventEnd);
-            DomReady = domContentLoadedEventEnd - fetchStart
+            DOMReady = domContentLoadedEventEnd - fetchStart
             // domainLookupStart DNS域名解析开始
             // domainLookupEnd DNS域名解析结束
-            DNS = domainLookupEnd - domainLookupStart;
+            dnsDuration = domainLookupEnd - domainLookupStart;
             // 发送
-            tracker.send({ DomReady,DNS });
+            tracker.send({ DOMReady,dnsDuration });
         }).observe({ entryTypes: ["navigation"] });
     };
 

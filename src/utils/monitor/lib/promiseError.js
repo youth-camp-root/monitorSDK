@@ -29,9 +29,9 @@ export function injectPromiseError() {
             }
             tracker.send({
                 //未捕获的promise错误
-                type: "error", //jsError
+                // type: "error", //jsError
                 errorType: "promiseError", //unhandledrejection
-                message: message, //标签名
+                errorMsg: message, //标签名
                 filename: file,
                 position: line + ":" + column, //行列
                 stack,

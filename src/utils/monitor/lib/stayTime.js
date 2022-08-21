@@ -35,10 +35,10 @@ window.addEventListener('hashchange',()=>{
    if(t && t>=1){
       tracker.send({
           userid:this.userid,
-          page:window.location.href,
-          stayTime:t,
-          type:"hashchange",
-          time:new Date().getTime(),
+          pageUrl:window.location.href,
+          stayDuration:t,
+          // type:"hashchange",
+          timestamp:Date.now(),
       })
   }
   
@@ -70,10 +70,10 @@ window.addEventListener('popstate',()=>{
  if(t && t>=1){
   tracker.send({
     userid:this.userid,
-    page:window.location.href,
-    stayTime:t,
-    type:"popstate",
-    time:new Date().getTime(),
+    pageUrl:window.location.href,
+    stayDuration:t,
+    // type:"popstate",
+    timestamp:Date.now(),
 })}
 })
 
@@ -83,10 +83,10 @@ window.addEventListener('pushstate',()=>{
   if(t && t>=1){
   tracker.send({
     userid:this.userid,
-    page:window.location.href,
-    stayTime:t,
-    type:"pushstate",
-    time:new Date().getTime(),
+    pageUrl:window.location.href,
+    stayDuration:t,
+    // type:"pushstate",
+    timestamp:Date.now(),
 })}
 //   console.log('待了时长pushstate：'+ t)
 })
@@ -97,10 +97,10 @@ window.addEventListener('replacestate',()=>{
    if(t && t>=1){
   tracker.send({
     userid:this.userid,
-    page:window.location.href,
-    stayTime:t,
-    type:"replacestate",
-    time:new Date().getTime(),
+    pageUrl:window.location.href,
+    stayDuration:t,
+    // type:"replacestate",
+    timestamp:Date.now(),
 })}
 //   console.log('待了时长replacestate：'+ t)
 })
@@ -119,9 +119,10 @@ window.onpagehide = ()=>{
   if(stopTime && stopTime>=1){
     tracker.send({
       userid:this.userid,
-      time:new Date().getTime(),
-      page:window.location.href,
-      stayTime:stopTime,
+      pageUrl:window.location.href,
+      stayDuration:stopTime,
+      // type:"replacestate",
+      timestamp:Date.now(),
   })}
   // localStorage.setItem('data',
   // JSON.stringify([...data,{user:new Date().getTime(),path:window.location.href,stopTime}]))
