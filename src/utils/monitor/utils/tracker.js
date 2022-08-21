@@ -3,7 +3,11 @@ class Tracker {
         this.url = "";
     }
     send(data) {
-        console.log("tracker-----", data);
+        const targetData = {
+            userid:localStorage.getItem("SDK_userId"),
+            ...data
+        };
+        console.log("tracker-----", targetData);
     }
 }
 export default new Tracker();

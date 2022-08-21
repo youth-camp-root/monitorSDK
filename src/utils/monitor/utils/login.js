@@ -20,7 +20,6 @@ export function login() {
                 var json = httpRequest.responseText;//获取到json字符串，还需解析
                 let res = JSON.parse(json)
                 localStorage.setItem('SDK_userId', res.data)
-                console.log('userid',res.data);
             }
         }
     }
