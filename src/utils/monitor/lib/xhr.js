@@ -23,7 +23,7 @@ export function injectXHR() {
         password
     ) {
         // 上报的接口不用处理
-        if (!url.match(/logstores/) && !url.match(/sockjs/)) {
+        if (!url.match(/monitor-backend/)) {
             this.logData = {
                 method,
                 url,
@@ -46,16 +46,17 @@ export function injectXHR() {
                 tracker.send({
                     //未捕获的promise错误
                     // type: "xhr", //xhr
-                    eventType: type, //请求类型 load error abort
                     targetURL: this.logData.url, //接口的url地址
                     statusCode: status + "-" + statusText,// 状态码
+                    // timestamp: Date.now(),
+                    eventType: type, //请求类型 load error abort
                     httpDuration: "" + Date.now() - start, // 耗时
-                    responseData: this.response ? JSON.stringify(this.response) : "",// 返回信息
-                    params: body || "", //请求参数
-                    timestamp: Date.now(),
                     dnsDuration,
-                    is_error: status > 300
-                });
+                    params: body || "", //请求参数
+                    responseData: this.response ? JSON.stringify(this.response) : "",// 返回信息
+                    is_error: status > 300,
+                    originURL: window.location.href,
+                }, 'request');
             };
             this.addEventListener("load", handler("load"), false);
             this.addEventListener("error", handler("error"), false);//失败

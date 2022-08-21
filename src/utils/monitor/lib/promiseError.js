@@ -30,12 +30,16 @@ export function injectPromiseError() {
             tracker.send({
                 //未捕获的promise错误
                 // type: "error", //jsError
+                category: 'Promise',
+                originURL: window.location.href,
+                timestamp: Date.now(),
                 errorType: "promiseError", //unhandledrejection
                 errorMsg: message, //标签名
                 filename: file,
                 position: line + ":" + column, //行列
                 stack,
-            });
+                selector: ''
+            }, 'error');
         },
         true
     );

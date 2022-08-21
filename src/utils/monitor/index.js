@@ -12,7 +12,7 @@ injectXHR();
 injectJsError();
 // promise错误监控
 injectPromiseError();
-// FP,FCP,DOMREADY,DNS监控
+// blankscreen error
 injectBlankScreen();
-// stay time
+// pageload
 countStayTime();

@@ -1,6 +1,10 @@
 import tracker from "../utils/tracker";
 
 export function injectJsError() {
+    let _perf;
+    window.performance.getEntries().forEach(function (perf) {
+        _perf = perf
+    });
     //一般JS运行时错误使用window.onerror捕获处理
     window.addEventListener(
         "error",
@@ -10,20 +14,32 @@ export function injectJsError() {
                 tracker.send({
                     //资源加载错误
                     // type: "error", //resource
+                    // errorType: "resourceError",
+                    // filename: event.target.src || event.target.href, //加载失败的资源
+                    // tagName: event.target.tagName, //标签名
+                    // timestamp: event.timeStamp, //时间
+                    category: 'Resource',
+                    originURL: event.target.src || event.target.href,
+                    // timestamp: event.timeStamp,
                     errorType: "resourceError",
-                    filename: event.target.src || event.target.href, //加载失败的资源
-                    tagName: event.target.tagName, //标签名
-                    timestamp: event.timeStamp, //时间
-                });
+                    filename: event.target.src || event.target.href,
+                    rsrcTimestamp: _perf.duration,
+                    tagName: event.target.tagName,
+                    selector: ''
+                }, 'error');
             } else {
                 tracker.send({
                     // type: "error", //error
+                    category: 'JS',
+                    originURL: event.target.src || event.target.href,
+                    timestamp: event.timeStamp,
                     errorType: "jsError", //jsError
                     errorMsg: event.message, //报错信息
                     filename: event.filename, //报错链接
                     position: (event.lineNo || 0) + ":" + (event.columnNo || 0), //行列号
                     stack: event.error.stack, //错误堆栈
-                });
+                    selector: ''
+                }, 'error');
             }
         },
         true

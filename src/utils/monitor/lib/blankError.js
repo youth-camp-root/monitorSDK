@@ -9,7 +9,7 @@ export function injectBlankScreen() {
             emptyPoints++;
         }
     }
-    window.error = function () {
+    window.onload = function () {
         let xElements, yElements;
         debugger;
         for (let i = 1; i <= 9; i++) {
@@ -30,12 +30,15 @@ export function injectBlankScreen() {
                 window.innerHeight / 2
             );
             tracker.send({
-                type: "blank",
+                categroy: 'BlankScreen',
+                originURL: window.location.href,
+                timestamp: Date.now(),
+                errorType: 'blankscreenError',
                 emptyPoints: "" + emptyPoints,
                 screen: window.screen.width + "x" + window.screen.height,
                 viewPoint: window.innerWidth + "x" + window.innerHeight,
-            });
-
+                selector: '',
+            }, 'error');
         }
     }
 }
